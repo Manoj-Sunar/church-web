@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300..700&display=swap');
+@import "tailwindcss";
+
+
+@theme {
+  --font-sans: "Quicksand", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fredoka", sans-serif;
+  --color-primary: #4F46E5;
+  --color-primary-soft: #EEF2FF;
+  --color-secondary: #F59E0B;
+  --color-secondary-soft: #FFFBEB;
+  --color-accent: #EC4899;
+  --color-accent-soft: #FDF2F8;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+}
+
+@layer base {
+  body {
+    @apply bg-[#F8FAFC] text-slate-800 font-sans antialiased;
+  }
+}
+
+/* Custom CSS classes */
+.disney-shadow {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.disney-card {
+  @apply bg-white rounded-3xl border-4 border-white;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.disney-button-pop {
+  transition: transform 0.15s ease;
+}
+
+.disney-button-pop:active {
+  transform: scale(0.95);
+}
+
+.bouncy-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+}
