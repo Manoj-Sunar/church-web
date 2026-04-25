@@ -48,20 +48,20 @@ const Footer = memo(() => {
                             <Span className="text-gray-700 font-bold uppercase tracking-widest">
                                 Connect
                             </Span>
-                            <FooterLink href="#">Contact Us</FooterLink>
-                            <FooterLink href="#">Small Groups</FooterLink>
-                            <FooterLink href="#">Ministries</FooterLink>
-                            <FooterLink href="#">Volunteer</FooterLink>
+                            <FooterLink href="/pages/contact">Contact Us</FooterLink>
+                          
+                            <FooterLink href="/pages/ministries">Ministries</FooterLink>
+                           
                         </div>
 
                         <div className="flex flex-col gap-4">
                             <Span className="text-gray-700 font-bold uppercase tracking-widest">
                                 Resources
                             </Span>
-                            <FooterLink href="#">Sermon Library</FooterLink>
-                            <FooterLink href="#">Newsletter</FooterLink>
-                            <FooterLink href="#">Giving FAQ</FooterLink>
-                            <FooterLink href="#">Privacy Policy</FooterLink>
+                            <FooterLink href="/pages/sermons">Sermon Library</FooterLink>
+                            
+                            <FooterLink href="/pages/give">Giving</FooterLink>
+                           
                         </div>
                     </div>
 

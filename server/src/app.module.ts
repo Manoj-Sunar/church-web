@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+
 import { UserModule } from './User/user.module';
 import { RedisCacheModule } from './redis-chache/redis-chache.module';
 import { PageContentModule } from './page-content/page-content.module';
@@ -16,16 +17,30 @@ import { LeaderModule } from './leader/leader.module';
 import { MembersModule } from './members/members.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 
-
-
-
-
 @Module({
-  imports: [ConfigModule.forRoot({
-    envFilePath: ".env",
-    isGlobal: true,
-  }),
-  MongooseModule.forRoot(process.env.DB_URI!),
+  imports: [
+    // ✅ Load env (Docker + local safe)
+    ConfigModule.forRoot({
+      isGlobal: true,
+      
+    }),
+
+    // ✅ FIXED Mongo config
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const uri = config.get<string>('MONGO_URI');
+
+        if (!uri) {
+          throw new Error('❌ MONGO_URI is not defined');
+        }
+
+        console.log('✅ Mongo URI loaded');
+
+        return { uri };
+      },
+    }),
+
     UserModule,
     RedisCacheModule,
     PageContentModule,
@@ -37,8 +52,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     ContactModule,
     LeaderModule,
     MembersModule,
-    AnalyticsModule
-
+    AnalyticsModule,
   ],
 
   controllers: [AppController],
