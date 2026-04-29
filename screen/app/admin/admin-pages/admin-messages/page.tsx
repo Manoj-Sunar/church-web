@@ -67,7 +67,7 @@ const Messages = () => {
         {
             key: "email",
             header: "Email",
-            render: (contact) => <div className="space-y-1 text-sm text-center bg-primary p-1 px-2 rounded-full text-white">
+            render: (contact) => <div className="space-y-1 text-sm ">
                 {contact.email}
             </div>,
         },
@@ -83,7 +83,7 @@ const Messages = () => {
         {
             key: "message",
             header: "Messages",
-            render: (contact) => <div className="space-y-1 text-sm p-1 px-3 rounded-sm bg-primary/80 text-white">
+            render: (contact) => <div className="space-y-1 text-sm ">
                 {contact.messages}
             </div>,
         },

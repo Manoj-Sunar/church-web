@@ -1,56 +1,118 @@
+// app/sermons/page.tsx
 
 import { publicAPI } from '@/app/API/public.api';
 import SermonsClient from '@/app/Components/pages/Sermon/SermonClient';
 import type { Metadata } from 'next';
 
-
-const siteUrl = 'https://lighttothenationsemmanuel.org'; // ✅ change
-const ogImage = `${siteUrl}/og/sermons.png`; // ✅ optional
+const siteUrl = 'https://lighttothenationsemmanuel.org';
+const ogImage = `${siteUrl}/og/pastor-daniel-tiruwa-sermons.png`;
 
 export const metadata: Metadata = {
-  title: 'Sermons | Light To The Nations Emanuel Church',
+  metadataBase: new URL(siteUrl),
+
+  title: "Pastor Daniel Tiruwa Sermons | Bible Teachings & Messages",
+
   description:
-    'Watch and listen to our latest sermons. Grow in faith through the Word of God—messages, speakers, and topics.',
-  alternates: { canonical: `${siteUrl}/sermons` },
-  openGraph: {
-    type: 'website',
-    url: `${siteUrl}/sermons`,
-    title: 'Sermons | Light To The Nations Emanuel Church',
-    description:
-      'Watch and listen to our latest sermons—messages, speakers, and topics to strengthen your faith.',
-    images: [{ url: ogImage, width: 1200, height: 630, alt: 'Sermons and messages' }],
+    "Watch Pastor Daniel Tiruwa sermons and Bible teachings. Powerful Christian messages to strengthen your faith and spiritual life.",
+
+  keywords: [
+    "Pastor Daniel Tiruwa sermons",
+    "Daniel Tiruwa preaching",
+    "Bible sermons Nepal",
+    "Christian messages Nepal",
+    "Pastor Daniel Tiruwa teachings",
+    "online sermons Nepal",
+  ],
+
+  alternates: {
+    canonical: "/sermons",
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Sermons | Light To The Nations Emanuel Church',
+
+  openGraph: {
+    type: "website",
+    url: `${siteUrl}/sermons`,
+    title: "Pastor Daniel Tiruwa Sermons",
     description:
-      'Watch and listen to our latest sermons—messages, speakers, and topics to strengthen your faith.',
+      "Watch powerful sermons and Bible teachings from Pastor Daniel Tiruwa.",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: "Pastor Daniel Tiruwa sermons",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Pastor Daniel Tiruwa Sermons",
+    description:
+      "Watch Bible teachings and sermons online",
     images: [ogImage],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
 export default async function SermonsPage() {
-
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'Sermons',
-    url: `${siteUrl}/sermons`,
-    isPartOf: { '@type': 'WebSite', name: 'Light To The Nations Emanuel Church', url: siteUrl },
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${siteUrl}/sermons#page`,
+        url: `${siteUrl}/sermons`,
+        name: "Pastor Daniel Tiruwa Sermons",
+        description:
+          "Watch sermons and Bible teachings from Pastor Daniel Tiruwa.",
+        mainEntity: {
+          "@type": "Person",
+          "@id": `${siteUrl}/#person`,
+          name: "Pastor Daniel Tiruwa",
+          jobTitle: "Pastor",
+          url: siteUrl,
+        },
+      },
+      {
+        "@type": "Person",
+        "@id": `${siteUrl}/#person`,
+        name: "Pastor Daniel Tiruwa",
+        url: siteUrl,
+      },
+    ],
   };
-
 
   const res = await publicAPI.getPageContentByPageName("sermons");
   const sermons = await publicAPI.getAllSermons(1, 10);
 
   return (
     <>
+      {/* Structured Data */}
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <SermonsClient sermons={sermons.data} pagination={sermons.pagination} content={res} />
+
+      {/* SEO Content (IMPORTANT: make visible in UI ideally) */}
+      <section>
+        <h1>Pastor Daniel Tiruwa Sermons</h1>
+
+        <p>
+          Watch powerful Bible teachings and sermons from Pastor Daniel Tiruwa.
+          These messages are designed to strengthen your faith, guide your
+          spiritual journey, and deepen your understanding of God’s Word.
+        </p>
+      </section>
+
+      <SermonsClient
+        sermons={sermons.data}
+        pagination={sermons.pagination}
+        content={res}
+      />
     </>
   );
 }

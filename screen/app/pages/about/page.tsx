@@ -1,73 +1,120 @@
-
 import { publicAPI } from '@/app/API/public.api';
 import AboutClient from '@/app/Components/pages/About/AboutClient';
 import type { Metadata } from 'next';
 
-
-const siteUrl = 'https://lighttothenationsemmanuel.org'; // ✅ change to your domain
-const ogImage = `${siteUrl}/og/about.png`; // ✅ create later
+const siteUrl = 'https://lighttothenationsemmanuel.org';
+const ogImage = `${siteUrl}/og/pastor-daniel-tiruwa-about.png`;
 
 export const metadata: Metadata = {
-  title: 'About Us | Light To The Nations Emanuel Church',
+  metadataBase: new URL(siteUrl),
+
+  title: "About Pastor Daniel Tiruwa | Biography & Ministry",
+
   description:
-    'Learn the story, mission, and leaders of Light To The Nations Emanuel Church. A faith-filled community built on love, growth, and service.',
-  alternates: { canonical: `${siteUrl}/about` },
-  openGraph: {
-    type: 'website',
-    url: `${siteUrl}/about`,
-    title: 'About Us | Light To The Nations Emanuel Church',
-    description:
-      'Our story, mission, and pastors—serving the community with faith, love, and hope.',
-    images: [{ url: ogImage, width: 1200, height: 630, alt: 'About our church community' }],
+    "Learn about Pastor Daniel Tiruwa, his life, calling, and ministry. Discover his mission, leadership, and teachings.",
+
+  keywords: [
+    "Pastor Daniel Tiruwa",
+    "Daniel Tiruwa biography",
+    "About Pastor Daniel Tiruwa",
+    "Pastor Daniel Tiruwa ministry",
+    "Nepali pastor Daniel Tiruwa",
+  ],
+
+  alternates: {
+    canonical: "/about",
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'About Us | Light To The Nations Emanuel Church',
+
+  openGraph: {
+    type: "profile",
+    url: `${siteUrl}/about`,
+    title: "About Pastor Daniel Tiruwa | Biography & Ministry",
     description:
-      'Our story, mission, and pastors—serving the community with faith, love, and hope.',
+      "Explore the life, ministry, and calling of Pastor Daniel Tiruwa.",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: "Pastor Daniel Tiruwa biography",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "About Pastor Daniel Tiruwa",
+    description: "Biography and ministry of Pastor Daniel Tiruwa",
     images: [ogImage],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
 export default async function AboutPage() {
-
-
-
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'AboutPage',
-    name: 'About Us',
-    url: `${siteUrl}/about`,
-    isPartOf: { '@type': 'WebSite', name: 'Light To The Nations Emanuel Church', url: siteUrl },
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ProfilePage",
+        "@id": `${siteUrl}/about#profile`,
+        url: `${siteUrl}/about`,
+        name: "About Pastor Daniel Tiruwa",
+        mainEntity: {
+          "@type": "Person",
+          "@id": `${siteUrl}/#person`,
+          name: "Pastor Daniel Tiruwa",
+          jobTitle: "Pastor",
+          description:
+            "Pastor Daniel Tiruwa is a Christian leader known for his teachings, sermons, and ministry work.",
+          image: `${siteUrl}/og/pastor-daniel-tiruwa.png`,
+          sameAs: [
+            "https://www.facebook.com/yourpage",
+            "https://www.youtube.com/yourchannel",
+          ],
+        },
+      },
+      {
+        "@type": "Person",
+        "@id": `${siteUrl}/#person`,
+        name: "Pastor Daniel Tiruwa",
+        url: siteUrl,
+      },
+    ],
   };
 
-
   try {
-
     const [res, leaders] = await Promise.all([
       publicAPI.getPageContentByPageName("about"),
       publicAPI.getAllLeaders(),
+    ]);
 
-    ])
-    return (<>
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <AboutClient content={res} leaders={leaders.data}/>
-    </>)
+    return (
+      <>
+        {/* Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
 
+        {/* SEO Content (IMPORTANT: make visible in real UI if possible) */}
+        <section style={{ display: "none" }}>
+          <h1>About Pastor Daniel Tiruwa</h1>
+          <p>
+            Pastor Daniel Tiruwa is a dedicated Christian leader known for his
+            powerful sermons, teachings, and ministry work. Learn about Pastor
+            Daniel Tiruwa’s journey, calling, and mission.
+          </p>
+        </section>
+
+        <AboutClient content={res} leaders={leaders.data} />
+      </>
+    );
   } catch (error) {
-
+    console.error(error);
+    return null;
   }
-
-
-
-
-
-
-
-
-
 }

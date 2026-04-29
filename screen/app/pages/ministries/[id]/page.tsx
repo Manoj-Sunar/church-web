@@ -1,49 +1,90 @@
 // app/ministries/[id]/page.tsx
+
 import { publicAPI } from "@/app/API/public.api";
 import MinistryDetailClient from "@/app/Components/pages/Ministry/MinistryDetailsClient";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
+const siteUrl = "https://lighttothenationsemmanuel.org";
 
-
-// Optional: generate SEO metadata dynamically
+// ✅ Dynamic SEO Metadata
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-
   const { id } = await params;
+
   try {
     const res = await publicAPI.getMinistryById(id);
 
-    if (!res?.data) return { title: "Ministry Not Found" };
+    if (!res?.data) {
+      return {
+        title: "Ministry Not Found | Pastor Daniel Tiruwa",
+      };
+    }
 
     const ministry = res.data;
 
+    const title = `${ministry.name} | Pastor Daniel Tiruwa Ministry`;
+    const description =
+      ministry.description?.slice(0, 160) ||
+      "Explore ministry led by Pastor Daniel Tiruwa.";
+
+    const image = ministry.image?.url || `${siteUrl}/og/ministries.png`;
+
     return {
-      title: ministry.name,
-      description: ministry.description,
+      metadataBase: new URL(siteUrl),
+
+      title,
+      description,
+
+      keywords: [
+        ministry.name,
+        "Pastor Daniel Tiruwa ministry",
+        "Daniel Tiruwa ministries",
+        "Christian ministry Nepal",
+      ],
+
+      alternates: {
+        canonical: `/ministries/${id}`,
+      },
+
       openGraph: {
-        title: ministry.name,
-        description: ministry.description,
-        images: ministry.image?.url
-          ? [
-            {
-              url: ministry.image.url||"",
-              width: 800,
-              height: 600,
-              alt: ministry.name,
-            },
-          ]
-          : [],
+        type: "article",
+        url: `${siteUrl}/ministries/${id}`,
+        title,
+        description,
+        images: [
+          {
+            url: image,
+            width: 1200,
+            height: 630,
+            alt: ministry.name,
+          },
+        ],
+      },
+
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [image],
+      },
+
+      robots: {
+        index: true,
+        follow: true,
       },
     };
   } catch {
-    return { title: "Ministry" };
+    return {
+      title: "Ministry | Pastor Daniel Tiruwa",
+    };
   }
 }
 
+// ✅ Page Component
 const MinistryDetailPage = async ({
   params,
 }: {
@@ -52,18 +93,60 @@ const MinistryDetailPage = async ({
   const { id } = await params;
 
   try {
-    // Fetch ministry data from public API
     const res = await publicAPI.getMinistryById(id);
 
-    // If no data found, redirect to 404 page
     if (!res?.data) return notFound();
 
-    // Render client component with ministry data
-    return <MinistryDetailClient ministry={res.data} />;
+    const ministry = res.data;
+
+    // ✅ Structured Data (VERY IMPORTANT)
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Article",
+          "@id": `${siteUrl}/ministries/${id}#ministry`,
+          url: `${siteUrl}/ministries/${id}`,
+          name: ministry.name,
+          description: ministry.description,
+          image: ministry.image?.url,
+          author: {
+            "@type": "Person",
+            "@id": `${siteUrl}/#person`,
+            name: "Pastor Daniel Tiruwa",
+          },
+        },
+        {
+          "@type": "Person",
+          "@id": `${siteUrl}/#person`,
+          name: "Pastor Daniel Tiruwa",
+          url: siteUrl,
+        },
+      ],
+    };
+
+    return (
+      <>
+        {/* Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+
+        {/* SEO reinforcement (IMPORTANT: better make visible) */}
+        <section style={{ display: "none" }}>
+          <h1>{ministry.name} - Pastor Daniel Tiruwa Ministry</h1>
+          <p>
+            {ministry.name} is part of the ministry led by Pastor Daniel Tiruwa.
+            Explore teachings, service, and spiritual growth through this ministry.
+          </p>
+        </section>
+
+        <MinistryDetailClient ministry={ministry} />
+      </>
+    );
   } catch (error) {
     console.error("Ministry fetch error:", error);
-
-    // Fallback to 404 page on error
     return notFound();
   }
 };
