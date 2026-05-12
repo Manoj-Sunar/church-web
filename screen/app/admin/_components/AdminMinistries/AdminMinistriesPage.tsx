@@ -13,7 +13,7 @@ import { Heading } from "@/app/Components/UI/Heading";
 import { Button } from "@/app/Components/UI/Button/Button";
 import { Modal } from "@/app/Components/UI/Modal";
 import { Badge } from "@/app/Components/UI/Badge";
-import { SuccessMessage } from "@/app/Components/Common/SuccessMSG";
+
 
 import type { Action, Column } from "../AdminTable";
 import { AdminTable } from "../AdminTable";
@@ -44,7 +44,7 @@ export default function AdminMinistriesPage() {
     error,
   } = useQuery<IMinistry>({
     queryKey: ["ministries"],
-    queryFn: publicAPI.getAllMinistry,
+    queryFn:()=>publicAPI.getAllMinistry(),
   });
 
 
