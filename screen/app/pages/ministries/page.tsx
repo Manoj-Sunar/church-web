@@ -84,7 +84,7 @@ export default async function MinistriesPage() {
 
   try {
     const [res, ministry] = await Promise.all([
-      publicAPI.getPageContentByPageName("ministries"),
+      publicAPI.getPageContentByPageName("ministries",{ next: { revalidate: 600 },}),
       publicAPI.getAllMinistry(),
     ]);
 

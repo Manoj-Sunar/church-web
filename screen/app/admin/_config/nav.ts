@@ -7,7 +7,8 @@ import {
   Users,
   FileText,
   Globe,
-  MessageCircle
+  MessageCircle,
+  Settings
 } from "lucide-react";
 
 export type AdminNavItem = {
@@ -25,4 +26,5 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { name: "Members", href: "/admin/admin-pages/admin-members", icon: Users },
   { name: "Messages", href: "/admin/admin-pages/admin-messages", icon: MessageCircle },
   { name: "Page Content", href: "/admin/admin-pages/admin-content", icon: FileText },
+  { name: "Settings", href: "/admin/admin-pages/settings", icon: Settings },
 ];

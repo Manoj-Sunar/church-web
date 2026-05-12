@@ -85,8 +85,8 @@ export default async function EventsPage() {
 
   try {
     const [content, events] = await Promise.all([
-      publicAPI.getPageContentByPageName("events"),
-      publicAPI.getAllEvents(),
+      publicAPI.getPageContentByPageName("events",{ next: { revalidate: 600 },}),
+      publicAPI.getAllEvents({ next: { revalidate: 600 },}),
     ]);
 
     return (

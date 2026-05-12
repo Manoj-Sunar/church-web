@@ -93,7 +93,7 @@ const MinistryDetailPage = async ({
   const { id } = await params;
 
   try {
-    const res = await publicAPI.getMinistryById(id);
+    const res = await publicAPI.getMinistryById(id,{ next: { revalidate: 600 },});
 
     if (!res?.data) return notFound();
 

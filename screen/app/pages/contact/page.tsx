@@ -84,7 +84,7 @@ export default async function ContactPage() {
   };
 
   try {
-    const res = await publicAPI.getPageContentByPageName("contact");
+    const res = await publicAPI.getPageContentByPageName("contact",{ next: { revalidate: 600 },});
 
     return (
       <>

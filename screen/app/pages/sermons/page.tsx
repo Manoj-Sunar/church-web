@@ -86,7 +86,7 @@ export default async function SermonsPage() {
     ],
   };
 
-  const res = await publicAPI.getPageContentByPageName("sermons");
+  const res = await publicAPI.getPageContentByPageName("sermons",{ next: { revalidate: 600 },});
   const sermons = await publicAPI.getAllSermons(1, 10);
 
   return (
@@ -97,16 +97,7 @@ export default async function SermonsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* SEO Content (IMPORTANT: make visible in UI ideally) */}
-      <section>
-        <h1>Pastor Daniel Tiruwa Sermons</h1>
-
-        <p>
-          Watch powerful Bible teachings and sermons from Pastor Daniel Tiruwa.
-          These messages are designed to strengthen your faith, guide your
-          spiritual journey, and deepen your understanding of God’s Word.
-        </p>
-      </section>
+     
 
       <SermonsClient
         sermons={sermons.data}

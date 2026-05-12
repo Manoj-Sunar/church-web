@@ -88,8 +88,8 @@ export default async function AboutPage() {
 
   try {
     const [res, leaders] = await Promise.all([
-      publicAPI.getPageContentByPageName("about"),
-      publicAPI.getAllLeaders(),
+      publicAPI.getPageContentByPageName("about",{ next: { revalidate: 600 },}),
+      publicAPI.getAllLeaders({ next: { revalidate: 600 }}),
     ]);
 
     return (

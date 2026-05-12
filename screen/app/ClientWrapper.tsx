@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-
 import { Navbar } from "./Components/Layout/Navbar";
 import Loading from "./loading";
 import { Providers } from "./Provider";
@@ -15,8 +14,11 @@ export default function ClientWrapper({
   children: React.ReactNode;
 }) {
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+
     const visited = localStorage.getItem("visited");
 
     if (!visited) {
@@ -29,20 +31,23 @@ export default function ClientWrapper({
     }
   }, []);
 
-  // 🔥 BLOCK EVERYTHING
+  // Prevent hydration mismatch
+  if (!mounted) return null;
+
   if (loading) {
-    return <Loading/>;
+    return <Loading />;
   }
 
-  // ✅ AFTER LOADING
   return (
     <>
       <Navbar />
-        <Providers>
-          {children}
-          <Toaster  position="top-right"/>
-        </Providers>
-        <Footer />
+
+      <Providers>
+        {children}
+        <Toaster position="top-right" />
+      </Providers>
+
+      <Footer />
     </>
   );
 }

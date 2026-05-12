@@ -8,9 +8,9 @@ export const publicAPI = {
 
 
   // ================== public api for page content api which can perform all users =======================
-  getPageContentByPageName: async (page: string) => {
+  getPageContentByPageName: async (page: string,config?:any) => {
     const res = await apiClient.get<PageContentResponse>(
-      `/page-content/${page}`
+      `/page-content/${page}`,config
     );
     return res
   },
@@ -25,8 +25,8 @@ export const publicAPI = {
     return res
   },
 
-  getSermonDetails: async (id: string) => {
-    const res = await apiClient.get<IsermonDetails>(`/sermons/sermon-details/${id}`);
+  getSermonDetails: async (id: string,config?:any) => {
+    const res = await apiClient.get<IsermonDetails>(`/sermons/sermon-details/${id}`,config);
     return res;
   },
 
@@ -39,16 +39,16 @@ export const publicAPI = {
   },
 
 
-  getMinistryById: async (id: string) => {
-    const res = await apiClient.get<IMinistryDetails>(`/ministry/${id}`);
+  getMinistryById: async (id: string,config?:any) => {
+    const res = await apiClient.get<IMinistryDetails>(`/ministry/${id}`,config);
     return res;
   },
 
 
 
   // ==================== public api for events which for all users include auth user and unauthorized user ===============
-  getAllEvents: async () => {
-    const res = await apiClient.get<IEvents>(`/events`);
+  getAllEvents: async (config:any) => {
+    const res = await apiClient.get<IEvents>(`/events`,config);
     return res;
   },
 
@@ -67,8 +67,8 @@ export const publicAPI = {
 
 
   // =========================== public api for geders get all leaders =====================
-  getAllLeaders: async () => {
-    return apiClient.get<ILeaders>("/leaders");
+  getAllLeaders: async (config:any) => {
+    return apiClient.get<ILeaders>("/leaders",config);
   },
 
   getLeaderById: async (id: string) => {

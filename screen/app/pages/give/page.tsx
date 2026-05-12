@@ -82,7 +82,7 @@ export default async function DonatePage() {
   };
 
   try {
-    const res = await publicAPI.getPageContentByPageName("donate");
+    const res = await publicAPI.getPageContentByPageName("donate",{ next: { revalidate: 600 },});
 
     return (
       <>

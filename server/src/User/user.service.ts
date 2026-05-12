@@ -132,10 +132,15 @@ export class UserService {
         return { message: 'Logged out' };
     }
 
+
+
+    
     // =========================
     // ISSUE TOKENS (CORE LOGIC)
     // =========================
     private async issueTokens(user: SafeUser) {
+
+
         const accessToken = await this.jwtService.signAsync(
             { sub: user.id, role: user.role },
             {
@@ -144,6 +149,8 @@ export class UserService {
             },
         );
 
+
+
         const refreshToken = await this.jwtService.signAsync(
             { sub: user.id },
             {
@@ -151,6 +158,8 @@ export class UserService {
                 expiresIn: '7d',
             },
         );
+
+
 
         const tokenHash = await bcrypt.hash(refreshToken, 10);
 
@@ -166,6 +175,9 @@ export class UserService {
             refreshToken,
         };
     }
+
+
+
 
     // =========================
     // SAFE USER

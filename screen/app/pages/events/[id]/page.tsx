@@ -86,7 +86,7 @@ const EventClientDetails = async ({
 
     try {
         const res = await publicAPI.getEventById(id, {
-            next: { revalidate: 60 },
+            next: { revalidate: 600 },
         });
 
         const event = res.data;

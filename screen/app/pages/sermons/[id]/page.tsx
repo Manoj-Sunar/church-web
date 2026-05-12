@@ -84,7 +84,7 @@ export default async function SermonDetailPage({
 }) {
   const { id } = await params;
 
-  const res = await publicAPI.getSermonDetails(id);
+  const res = await publicAPI.getSermonDetails(id,{ next: { revalidate: 600 },});
   const sermon = res?.data;
 
   if (!sermon) return notFound();

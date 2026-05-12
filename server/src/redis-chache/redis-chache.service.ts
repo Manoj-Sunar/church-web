@@ -10,9 +10,9 @@ import Redis from 'ioredis';
 @Injectable()
 export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(RedisCacheService.name);
- constructor(
-    @Inject('REDIS_CLIENT') private  redis: Redis, // ✅ FIXED
- ){}
+  constructor(
+    @Inject('REDIS_CLIENT') private redis: Redis, // ✅ FIXED
+  ) { }
 
   onModuleInit() {
     this.redis = new Redis({
