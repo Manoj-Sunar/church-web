@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  frontend-service:
+    build:
+      context: ./screen
+      dockerfile: Dockerfile
+    container_name: church-screen-service
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./screen/.env.docker
+    depends_on:
+      backend-service:
+        condition: service_started
+    networks:
+      - app-network
+
+  backend-service:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: church-server-service
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env.docker
+    depends_on:
+      redis-service:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  redis-service:
+    image: redis:7-alpine
+    container_name: redis-service
+    restart: always
+    ports:
+      - "6379:6379"
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
