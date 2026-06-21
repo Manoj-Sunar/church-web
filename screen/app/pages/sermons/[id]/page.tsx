@@ -121,17 +121,6 @@ export default async function SermonDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* SEO Content (IMPORTANT: make visible in UI ideally) */}
-      <section>
-        <h1>{sermon.title}</h1>
-
-        <p>
-          Watch this powerful sermon by Pastor Daniel Tiruwa.
-          This message will help you grow spiritually and understand God’s Word
-          more deeply.
-        </p>
-      </section>
-
       <SermonDetailClient sermon={sermon} />
     </>
   );
