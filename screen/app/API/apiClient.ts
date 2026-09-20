@@ -112,6 +112,7 @@ export const apiClient = {
     get: async <T>(url: string, config?: any): Promise<T> => {
         try {
             const res = await api.get<T>(url, config);
+           
             return res.data;
         } catch (error) {
             handleError(error);

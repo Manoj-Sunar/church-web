@@ -5,7 +5,7 @@ import SermonDetailClient from '@/app/Components/pages/Sermon/SermonDetailsClien
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
-const siteUrl = 'https://lighttothenationsemmanuel.org';
+const siteUrl = 'https://pastordanieltiruwaministry.org';
 
 // ✅ Dynamic SEO Metadata
 export async function generateMetadata({

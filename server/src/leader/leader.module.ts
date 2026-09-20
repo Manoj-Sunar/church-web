@@ -4,17 +4,18 @@ import { LeaderController } from './leader.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Leader, LeaderSchema } from './leader.schema';
 import { JwtModule } from '@nestjs/jwt';
-
 import { CloudinaryModule } from '@/src/Cloudinary/cloudinary.module';
-import { RedisCacheModule } from '../redis-chache/redis-chache.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Leader.name, schema: LeaderSchema }]),
-  JwtModule.register({}),
-  CloudinaryModule,
-  RedisCacheModule
+  imports: [
+    MongooseModule.forFeature([
+      { name: Leader.name, schema: LeaderSchema },
+    ]),
+    JwtModule.register({}),
+    CloudinaryModule,
+    // ❌ RedisCacheModule removed — @Global() now
   ],
   providers: [LeaderService],
-  controllers: [LeaderController]
+  controllers: [LeaderController],
 })
-export class LeaderModule { }
+export class LeaderModule {}

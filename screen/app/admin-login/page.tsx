@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import AdminLoginClient from "../admin/_components/AdminLogin/AdminLoginClient";
+import { Providers } from "../Provider";
 
 
 export const metadata: Metadata = {
@@ -11,5 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function AdminLoginPage() {
-    return <AdminLoginClient />;
+    return <Providers>
+        <AdminLoginClient />
+    </Providers>;
 }

@@ -8,9 +8,13 @@ import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import * as express from 'express';
+import Redis from 'ioredis';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // ✅ Enable shutdown hooks so providers can clean up
+  app.enableShutdownHooks();
 
   // ✅ CORS
   app.enableCors({
@@ -46,6 +50,17 @@ async function bootstrap() {
       },
     }),
   );
+
+  // 🧹 DEV-ONLY: flush Redis cache on boot to avoid stale empty responses
+  if (process.env.NODE_ENV !== 'production') {
+    try {
+      const redis = app.get<Redis>('REDIS_CLIENT');
+      await redis.flushdb();
+      console.log('🧹 Redis cache cleared on boot (dev mode)');
+    } catch (err) {
+      console.warn('⚠️ Could not flush Redis on boot:', err);
+    }
+  }
 
   await app.listen(5000);
 }

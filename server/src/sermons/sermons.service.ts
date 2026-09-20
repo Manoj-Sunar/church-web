@@ -143,6 +143,10 @@ export class SermonsService {
     limit = this.DEFAULT_LIMIT,
   ) {
 
+console.log('Collection:', this.sermonsModel.collection.name);
+console.log('Count:', await this.sermonsModel.countDocuments());
+console.log('Count in "sermons":', await this.sermonsModel.db.collection('sermons').countDocuments())
+
     try {
 
       page = Math.max(1, Number(page));

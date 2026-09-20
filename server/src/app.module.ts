@@ -19,15 +19,16 @@ import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
-
-    
-    // ✅ Load env (Docker + local safe)
+    // ✅ Load env based on NODE_ENV
     ConfigModule.forRoot({
       isGlobal: true,
-      
+      envFilePath:
+        process.env.NODE_ENV === 'production'
+          ? '.env.production'
+          : '.env.local',
     }),
 
-    // ✅ FIXED Mongo config
+    // ✅ Mongo config
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -37,14 +38,15 @@ import { AnalyticsModule } from './analytics/analytics.module';
           throw new Error('❌ MONGO_URI is not defined');
         }
 
-        console.log('✅ Mongo URI loaded');
-
         return { uri };
       },
     }),
 
-    UserModule,
+    // ✅ Redis (GLOBAL — do NOT import this in any feature module)
     RedisCacheModule,
+
+    // Feature modules
+    UserModule,
     PageContentModule,
     GuardModule,
     CloudinaryModule,
@@ -60,4 +62,4 @@ import { AnalyticsModule } from './analytics/analytics.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

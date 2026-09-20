@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sun } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
+
 
 import { Card } from "@/app/Components/UI/Card";
 import { Heading } from "@/app/Components/UI/Heading";
@@ -50,7 +50,7 @@ export default function AdminLoginClient() {
 
     onSuccess: (data: any) => {
 
-      router.push("/admin/admin-pages/dashboard");
+      router.push("/admin");
       toast.success(data.message);
     },
 

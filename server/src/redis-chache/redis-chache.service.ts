@@ -10,61 +10,41 @@ import Redis from 'ioredis';
 @Injectable()
 export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(RedisCacheService.name);
+
   constructor(
-    @Inject('REDIS_CLIENT') private redis: Redis, // ✅ FIXED
-  ) { }
+    @Inject('REDIS_CLIENT') private readonly redis: Redis,
+  ) {}
 
   onModuleInit() {
-    this.redis = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: Number(process.env.REDIS_PORT) || 6379,
-      password: process.env.REDIS_PASSWORD || undefined,
-      maxRetriesPerRequest: 3,
-      enableReadyCheck: true,
-      lazyConnect: false,
-      retryStrategy: (times) => {
-        const delay = Math.min(times * 200, 2000);
-        return delay;
-      },
-      reconnectOnError: (err) => {
-        const targetError = 'READONLY';
-        return err.message.includes(targetError);
-      },
-    });
-
-    this.redis.on('connect', () => {
-      this.logger.log('Redis connected');
-
-    });
-
-    this.redis.on('ready', () => {
-      this.logger.log('Redis ready');
-    });
-
-    this.redis.on('error', (err) => {
-      this.logger.error(`Redis error: ${err.message}`, err.stack);
-    });
-
-    this.redis.on('close', () => {
-      this.logger.warn('Redis connection closed');
-    });
-
-    this.redis.on('reconnecting', () => {
-      this.logger.warn('Redis reconnecting...');
-    });
+    // ✅ DO NOT create a new Redis client here.
+    // The provider (redis.provider.ts) already created and owns the single
+    // shared client. We only attach listeners.
+    this.redis.on('connect', () =>
+      this.logger.log('Redis connected'),
+    );
+    this.redis.on('ready', () =>
+      this.logger.log('Redis ready'),
+    );
+    this.redis.on('error', (err) =>
+      this.logger.error(`Redis error: ${err.message}`),
+    );
+    this.redis.on('close', () =>
+      this.logger.warn('Redis connection closed'),
+    );
+    this.redis.on('reconnecting', () =>
+      this.logger.warn('Redis reconnecting...'),
+    );
   }
 
   async onModuleDestroy() {
-    if (this.redis) {
-      await this.redis.quit();
-    }
+    // ✅ The provider owns the client — do NOT quit here.
+    // Quitting here caused the "closed → reconnecting" loop because multiple
+    // service instances were quitting the shared connection.
+    // If you want a clean shutdown, do it in the provider or via
+    // app.enableShutdownHooks() in main.ts.
   }
 
-  async set<T>(
-    key: string,
-    value: T,
-    expireSeconds?: number,
-  ): Promise<void> {
+  async set<T>(key: string, value: T, expireSeconds?: number): Promise<void> {
     const stringValue = JSON.stringify(value);
 
     if (expireSeconds) {

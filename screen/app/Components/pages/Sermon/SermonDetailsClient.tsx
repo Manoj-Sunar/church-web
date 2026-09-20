@@ -77,6 +77,7 @@ export default function SermonDetailClient({ sermon }: Isermon) {
                                 {/* Play Button */}
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <motion.div
+                                    
                                         whileHover={{ scale: 1.06 }}
                                         whileTap={{ scale: 0.96 }}
                                     >

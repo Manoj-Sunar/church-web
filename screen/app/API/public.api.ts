@@ -8,10 +8,11 @@ export const publicAPI = {
 
 
   // ================== public api for page content api which can perform all users =======================
-  getPageContentByPageName: async (page: string,config?:any) => {
+  getPageContentByPageName: async (page: string, config?: any) => {
     const res = await apiClient.get<PageContentResponse>(
-      `/page-content/${page}`,config
+      `/page-content/${page}`, config
     );
+
     return res
   },
 
@@ -22,38 +23,44 @@ export const publicAPI = {
 
   getAllSermons: async (page: number, limit: number) => {
     const res = await apiClient.get<Isermons>(`/sermons?page=${page}&limit=${limit}`);
+
     return res
   },
 
-  getSermonDetails: async (id: string,config?:any) => {
-    const res = await apiClient.get<IsermonDetails>(`/sermons/sermon-details/${id}`,config);
+  getSermonDetails: async (id: string, config?: any) => {
+    const res = await apiClient.get<IsermonDetails>(`/sermons/sermon-details/${id}`, config);
+
     return res;
   },
 
 
 
   // =================== public api for ministry which for all users include auth user and unauth user =============
-  getAllMinistry: async (page?:number,limit?:number) => {
+  getAllMinistry: async (page?: number, limit?: number) => {
     const res = await apiClient.get<IMinistry>(`/ministry?page=${page}&limit=${limit}`);
+
     return res;
   },
 
 
-  getMinistryById: async (id: string,config?:any) => {
-    const res = await apiClient.get<IMinistryDetails>(`/ministry/${id}`,config);
+  getMinistryById: async (id: string, config?: any) => {
+    const res = await apiClient.get<IMinistryDetails>(`/ministry/${id}`, config);
+
     return res;
   },
 
 
 
   // ==================== public api for events which for all users include auth user and unauthorized user ===============
-  getAllEvents: async (config:any) => {
-    const res = await apiClient.get<IEvents>(`/events`,config);
+  getAllEvents: async (config: any) => {
+    const res = await apiClient.get<IEvents>(`/events`, config);
+
     return res;
   },
 
   getEventById: async (id: string, config?: any) => {
     const res = await apiClient.get<IEventDetails>(`/events/${id}`, config);
+
     return res;
   },
 
@@ -67,8 +74,8 @@ export const publicAPI = {
 
 
   // =========================== public api for geders get all leaders =====================
-  getAllLeaders: async (config:any) => {
-    return apiClient.get<ILeaders>("/leaders",config);
+  getAllLeaders: async (config: any) => {
+    return apiClient.get<ILeaders>("/leaders", config);
   },
 
   getLeaderById: async (id: string) => {

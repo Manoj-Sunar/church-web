@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-
 import "./globals.css";
-
-
-import ClientWrapper from "./ClientWrapper";
-
-
-
 
 export const metadata: Metadata = {
   title: "Church Site",
@@ -15,18 +8,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html  lang="en" suppressHydrationWarning>
-      <body
-      
-        suppressHydrationWarning
-      >
-       <ClientWrapper>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         {children}
-       </ClientWrapper>
       </body>
     </html>
   );

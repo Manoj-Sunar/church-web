@@ -18,7 +18,7 @@ export type AdminNavItem = {
 };
 
 export const ADMIN_NAV: AdminNavItem[] = [
-  { name: "Dashboard", href: "/admin/admin-pages/dashboard", icon: LayoutDashboard },
+  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Sermons", href: "/admin/admin-pages/admin-sermon", icon: BookOpen },
   { name: "Events", href: "/admin/admin-pages/admin-event", icon: Calendar },
   { name: "Ministries", href: "/admin/admin-pages/admin-ministries", icon: Users },
