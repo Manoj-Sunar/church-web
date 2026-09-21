@@ -1,114 +1,113 @@
-// app/contact/page.tsx
-
-import { publicAPI } from "@/app/API/public.api";
-import ContactClient from "@/app/Components/pages/Contact/ContactClient";
-import type { Metadata } from "next";
-
-const siteUrl = "https://lighttothenationsemmanuel.org";
-const ogImage = `${siteUrl}/og/pastor-daniel-tiruwa-contact.png`;
+// app/(public)/contact/page.tsx
+import { publicAPI } from '@/app/API/public.api';
+import ContactClient from '@/app/Components/pages/Contact/ContactClient';
+import type { Metadata } from 'next';
+import { SITE_URL, ogImages, primaryKeywords } from '@/app/SEO/siteConfig';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
 
-  title: "Contact Pastor Daniel Tiruwa | Official Contact Page",
+  title: 'Contact Pastor Daniel Tiruwa | Official Contact Page',
 
   description:
-    "Contact Pastor Daniel Tiruwa for ministry inquiries, prayer requests, and speaking engagements. Connect directly with Pastor Daniel Tiruwa.",
+    'Contact Pastor Daniel Tiruwa for ministry inquiries, prayer requests, and speaking engagements. Connect directly with Pastor Daniel Tiruwa and Light to the Nations Emmanuel Church.',
 
   keywords: [
-    "Contact Pastor Daniel Tiruwa",
-    "Pastor Daniel Tiruwa contact",
-    "Daniel Tiruwa ministry contact",
-    "Pastor Daniel Tiruwa prayer request",
+    ...primaryKeywords,
+    'Contact Pastor Daniel Tiruwa',
+    'Pastor Daniel Tiruwa contact',
+    'Daniel Tiruwa ministry contact',
+    'Pastor Daniel Tiruwa prayer request',
+    'contact church Nepal',
   ],
 
-  alternates: {
-    canonical: "/contact",
-  },
+  alternates: { canonical: '/contact' },
 
   openGraph: {
-    type: "website",
-    url: `${siteUrl}/contact`,
-    title: "Contact Pastor Daniel Tiruwa",
+    type: 'website',
+    url: `${SITE_URL}/contact`,
+    title: 'Contact Pastor Daniel Tiruwa',
     description:
-      "Reach out to Pastor Daniel Tiruwa for prayer requests, ministry, and speaking engagements.",
+      'Reach out to Pastor Daniel Tiruwa for prayer requests, ministry, and speaking engagements.',
     images: [
       {
-        url: ogImage,
+        url: ogImages.contact,
         width: 1200,
         height: 630,
-        alt: "Contact Pastor Daniel Tiruwa",
+        alt: 'Contact Pastor Daniel Tiruwa',
       },
     ],
   },
 
   twitter: {
-    card: "summary_large_image",
-    title: "Contact Pastor Daniel Tiruwa",
-    description:
-      "Official contact page for Pastor Daniel Tiruwa ministry",
-    images: [ogImage],
+    card: 'summary_large_image',
+    title: 'Contact Pastor Daniel Tiruwa',
+    description: 'Official contact page for Pastor Daniel Tiruwa ministry',
+    images: [ogImages.contact],
   },
 
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 };
 
-export default async function ContactPage() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "ContactPage",
-        "@id": `${siteUrl}/contact#contact`,
-        url: `${siteUrl}/contact`,
-        name: "Contact Pastor Daniel Tiruwa",
-        mainEntity: {
-          "@type": "Person",
-          "@id": `${siteUrl}/#person`,
-          name: "Pastor Daniel Tiruwa",
-          jobTitle: "Pastor",
-          description:
-            "Pastor Daniel Tiruwa is a Christian leader available for ministry, prayer, and speaking engagements.",
-        },
-      },
-      {
-        "@type": "Person",
-        "@id": `${siteUrl}/#person`,
-        name: "Pastor Daniel Tiruwa",
-        url: siteUrl,
-      },
-    ],
-  };
+export const revalidate = 600;
 
+export default async function ContactPage() {
   try {
-    const res = await publicAPI.getPageContentByPageName("contact",{ next: { revalidate: 600 },});
+    const content = await publicAPI.getPageContentByPageName('contact', {
+      next: { revalidate: 600 },
+    });
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'ContactPage',
+          '@id': `${SITE_URL}/contact#page`,
+          url: `${SITE_URL}/contact`,
+          name: 'Contact Pastor Daniel Tiruwa',
+          description:
+            'Contact page for Pastor Daniel Tiruwa Ministry and Light to the Nations Emmanuel Church.',
+          about: { '@id': `${SITE_URL}/#person` },
+          isPartOf: { '@id': `${SITE_URL}/#website` },
+          primaryImageOfPage: {
+            '@type': 'ImageObject',
+            url: ogImages.contact,
+          },
+          inLanguage: 'en',
+        },
+        {
+          '@type': 'Person',
+          '@id': `${SITE_URL}/#person`,
+          name: 'Pastor Daniel Tiruwa',
+          url: SITE_URL,
+          jobTitle: 'Senior Pastor',
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+            { '@type': 'ListItem', position: 2, name: 'Contact', item: `${SITE_URL}/contact` },
+          ],
+        },
+      ],
+    };
 
     return (
       <>
-        {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-
-        {/* SEO reinforcement (make visible in UI ideally) */}
-        <section style={{ display: "none" }}>
-          <h1>Contact Pastor Daniel Tiruwa</h1>
-          <p>
-            Get in touch with Pastor Daniel Tiruwa for prayer requests,
-            ministry inquiries, and speaking engagements. Connect with Pastor
-            Daniel Tiruwa today.
-          </p>
-        </section>
-
-        <ContactClient content={res} />
+        <ContactClient content={content} />
       </>
     );
   } catch (error) {
-    console.error(error);
-    return null;
+    console.error('[ContactPage]', error);
+    return (
+      <div className="p-10 text-center">
+        <h1 className="text-xl font-semibold">Contact Pastor Daniel Tiruwa</h1>
+        <p className="text-gray-500 mt-2">Failed to load contact information. Please refresh.</p>
+      </div>
+    );
   }
 }

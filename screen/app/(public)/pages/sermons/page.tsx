@@ -1,104 +1,80 @@
-// app/sermons/page.tsx
-
+// app/(public)/sermons/page.tsx
 import { publicAPI } from '@/app/API/public.api';
 import SermonsClient from '@/app/Components/pages/Sermon/SermonClient';
 import type { Metadata } from 'next';
-
-const siteUrl = 'https://lighttothenationsemmanuel.org';
-const ogImage = `${siteUrl}/og/pastor-daniel-tiruwa-sermons.png`;
+import { SITE_URL, ogImages, primaryKeywords } from '@/app/SEO/siteConfig';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
 
-  title: "Pastor Daniel Tiruwa Sermons | Bible Teachings & Messages",
+  title: 'Pastor Daniel Tiruwa Sermons | Bible Teachings & Messages',
 
   description:
-    "Watch Pastor Daniel Tiruwa sermons and Bible teachings. Powerful Christian messages to strengthen your faith and spiritual life.",
+    'Watch Pastor Daniel Tiruwa sermons and Bible teachings. Powerful Christian messages to strengthen your faith and spiritual life.',
 
   keywords: [
-    "Pastor Daniel Tiruwa sermons",
-    "Daniel Tiruwa preaching",
-    "Bible sermons Nepal",
-    "Christian messages Nepal",
-    "Pastor Daniel Tiruwa teachings",
-    "online sermons Nepal",
+    ...primaryKeywords,
+    'Pastor Daniel Tiruwa sermons',
+    'Daniel Tiruwa preaching',
+    'Bible sermons Nepal',
+    'Christian messages Nepal',
+    'online sermons Nepal',
   ],
 
-  alternates: {
-    canonical: "/sermons",
-  },
+  alternates: { canonical: '/sermons' },
 
   openGraph: {
-    type: "website",
-    url: `${siteUrl}/sermons`,
-    title: "Pastor Daniel Tiruwa Sermons",
-    description:
-      "Watch powerful sermons and Bible teachings from Pastor Daniel Tiruwa.",
-    images: [
-      {
-        url: ogImage,
-        width: 1200,
-        height: 630,
-        alt: "Pastor Daniel Tiruwa sermons",
-      },
-    ],
+    type: 'website',
+    url: `${SITE_URL}/sermons`,
+    title: 'Pastor Daniel Tiruwa Sermons',
+    description: 'Watch powerful sermons and Bible teachings from Pastor Daniel Tiruwa.',
+    images: [{ url: ogImages.sermons, width: 1200, height: 630, alt: 'Pastor Daniel Tiruwa sermons' }],
   },
 
   twitter: {
-    card: "summary_large_image",
-    title: "Pastor Daniel Tiruwa Sermons",
-    description:
-      "Watch Bible teachings and sermons online",
-    images: [ogImage],
+    card: 'summary_large_image',
+    title: 'Pastor Daniel Tiruwa Sermons',
+    description: 'Watch Bible teachings and sermons online',
+    images: [ogImages.sermons],
   },
 
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 };
 
 export default async function SermonsPage() {
   const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
+    '@context': 'https://schema.org',
+    '@graph': [
       {
-        "@type": "CollectionPage",
-        "@id": `${siteUrl}/sermons#page`,
-        url: `${siteUrl}/sermons`,
-        name: "Pastor Daniel Tiruwa Sermons",
-        description:
-          "Watch sermons and Bible teachings from Pastor Daniel Tiruwa.",
-        mainEntity: {
-          "@type": "Person",
-          "@id": `${siteUrl}/#person`,
-          name: "Pastor Daniel Tiruwa",
-          jobTitle: "Pastor",
-          url: siteUrl,
-        },
+        '@type': 'CollectionPage',
+        '@id': `${SITE_URL}/sermons#page`,
+        url: `${SITE_URL}/sermons`,
+        name: 'Pastor Daniel Tiruwa Sermons',
+        description: 'Watch sermons and Bible teachings from Pastor Daniel Tiruwa.',
+        mainEntity: { '@id': `${SITE_URL}/#person` },
+        isPartOf: { '@id': `${SITE_URL}/#website` },
       },
       {
-        "@type": "Person",
-        "@id": `${siteUrl}/#person`,
-        name: "Pastor Daniel Tiruwa",
-        url: siteUrl,
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+          { '@type': 'ListItem', position: 2, name: 'Sermons', item: `${SITE_URL}/sermons` },
+        ],
       },
     ],
   };
 
-  const res = await publicAPI.getPageContentByPageName("sermons",{ next: { revalidate: 600 },});
-  const sermons = await publicAPI.getAllSermons(1, 10);
+  const [res, sermons] = await Promise.all([
+    publicAPI.getPageContentByPageName('sermons', { next: { revalidate: 600 } }),
+    publicAPI.getAllSermons(1, 10),
+  ]);
 
   return (
     <>
-      {/* Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-
-     
-
       <SermonsClient
         sermons={sermons.data}
         pagination={sermons.pagination}

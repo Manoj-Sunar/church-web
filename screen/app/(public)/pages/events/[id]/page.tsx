@@ -1,156 +1,151 @@
-import { publicAPI } from "@/app/API/public.api";
-import EventDetailClient from "@/app/Components/pages/Events/EventClientDetails";
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
+// app/(public)/events/[id]/page.tsx
+import { publicAPI } from '@/app/API/public.api';
+import EventDetailClient from '@/app/Components/pages/Events/EventClientDetails';
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { SITE_URL, ogImages } from '@/app/SEO/siteConfig';
 
-const siteUrl = "https://lighttothenationsemmanuel.org";
+export const revalidate = 600;
 
-// ✅ Dynamic SEO Metadata
-export async function generateMetadata({
-    params,
-}: {
-    params: Promise<{ id: string }>;
-}): Promise<Metadata> {
-    const { id } = await params;
-
-    try {
-        const res = await publicAPI.getEventById(id);
-        const event = res.data;
-
-        const title = `${event?.title} | Pastor Daniel Tiruwa Event`;
-        const description =
-            event?.description?.slice(0, 160) ||
-            "Join this event led by Pastor Daniel Tiruwa.";
-
-        const image = event?.image.url || `${siteUrl}/og/pastor-daniel-tiruwa-events.png`;
-
-        return {
-            metadataBase: new URL(siteUrl),
-
-            title,
-            description,
-
-            keywords: [
-                event?.title,
-                "Pastor Daniel Tiruwa event",
-                "Daniel Tiruwa ministry event",
-                "Christian event Nepal",
-            ],
-
-            alternates: {
-                canonical: `/events/${id}`,
-            },
-
-            openGraph: {
-                type: "article",
-                url: `${siteUrl}/events/${id}`,
-                title,
-                description,
-                images: [
-                    {
-                        url: image,
-                        width: 1200,
-                        height: 630,
-                        alt: `${event?.title} - Pastor Daniel Tiruwa`,
-                    },
-                ],
-            },
-
-            twitter: {
-                card: "summary_large_image",
-                title,
-                description,
-                images: [image],
-            },
-
-            robots: {
-                index: true,
-                follow: true,
-            },
-        };
-    } catch {
-        return {
-            title: "Event Not Found | Pastor Daniel Tiruwa",
-            description: "This event does not exist.",
-        };
-    }
+export async function generateStaticParams() {
+  try {
+    const res = await publicAPI.getAllEvents({});
+    return (res?.data ?? []).map((e: any) => ({ id: String(e._id) }));
+  } catch {
+    return [];
+  }
 }
 
-// ✅ Page Component
-const EventClientDetails = async ({
-    params,
+export async function generateMetadata({
+  params,
 }: {
-    params: Promise<{ id: string }>;
-}) => {
-    const { id } = await params;
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
 
-    try {
-        const res = await publicAPI.getEventById(id, {
-            next: { revalidate: 600 },
-        });
+  try {
+    const res = await publicAPI.getEventById(id);
+    const event = res.data;
 
-        const event = res.data;
-
-        if (!event) return notFound();
-
-        // ✅ Structured Data (VERY IMPORTANT)
-        const jsonLd = {
-            "@context": "https://schema.org",
-            "@graph": [
-                {
-                    "@type": "Event",
-                    name: event.title,
-                    startDate: event.date || new Date().toISOString(),
-
-                    eventAttendanceMode:
-                        "https://schema.org/OfflineEventAttendanceMode",
-                    eventStatus: "https://schema.org/EventScheduled",
-                    description: event.description,
-                    image: event.image,
-                    location: {
-                        "@type": "Place",
-                        name: event.location || "Event Location",
-                    },
-                    organizer: {
-                        "@type": "Person",
-                        "@id": `${siteUrl}/#person`,
-                        name: "Pastor Daniel Tiruwa",
-                    },
-                    url: `${siteUrl}/events/${id}`,
-                },
-                {
-                    "@type": "Person",
-                    "@id": `${siteUrl}/#person`,
-                    name: "Pastor Daniel Tiruwa",
-                    url: siteUrl,
-                },
-            ],
-        };
-
-        return (
-            <>
-                {/* Structured Data */}
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-                />
-
-                {/* SEO reinforcement (make visible in UI ideally) */}
-                <section style={{ display: "none" }}>
-                    <h1>{event.title} - Pastor Daniel Tiruwa Event</h1>
-                    <p>
-                        Join {event.title}, a special event led by Pastor Daniel Tiruwa.
-                        Participate in this ministry gathering, teachings, and fellowship.
-                    </p>
-                </section>
-
-                <EventDetailClient event={event} />
-            </>
-        );
-    } catch (error) {
-        console.error("Event fetch error:", error);
-        return notFound();
+    if (!event) {
+      return { title: 'Event Not Found | Pastor Daniel Tiruwa Ministry' };
     }
-};
 
-export default EventClientDetails;
+    const title = `${event.title} | Pastor Daniel Tiruwa Event`;
+    const description =
+      event.description?.slice(0, 160) ||
+      `Join "${event.title}", a special event led by Pastor Daniel Tiruwa.`;
+    const image = event.image?.url || ogImages.events;
+
+    return {
+      metadataBase: new URL(SITE_URL),
+      title,
+      description,
+      keywords: [
+        event.title,
+        `${event.title} Nepal`,
+        'Pastor Daniel Tiruwa event',
+        'Daniel Tiruwa ministry event',
+        'Christian event Nepal',
+        event.location,
+        event.category,
+      ],
+      alternates: { canonical: `/events/${id}` },
+      openGraph: {
+        type: 'article',
+        url: `${SITE_URL}/events/${id}`,
+        title,
+        description,
+        siteName: 'Pastor Daniel Tiruwa Ministry',
+        images: [{ url: image, width: 1200, height: 630, alt: event.title }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [image],
+      },
+      robots: { index: true, follow: true },
+    };
+  } catch {
+    return { title: 'Event | Pastor Daniel Tiruwa' };
+  }
+}
+
+export default async function EventDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  try {
+    const res = await publicAPI.getEventById(id, { next: { revalidate: 600 } });
+    const event = res.data;
+
+    if (!event) return notFound();
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Event',
+          name: event.title,
+          startDate: event.date || new Date().toISOString(),
+          eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+          eventStatus: 'https://schema.org/EventScheduled',
+          description: event.description,
+          image: event.image?.url ? [event.image.url] : [ogImages.events],
+          location: {
+            '@type': 'Place',
+            name: event.location || 'Event Location',
+            address: {
+              '@type': 'PostalAddress',
+              addressCountry: 'NP',
+              addressLocality: event.location || 'Nepal',
+            },
+          },
+          organizer: {
+            '@type': 'Person',
+            '@id': `${SITE_URL}/#person`,
+            name: 'Pastor Daniel Tiruwa',
+          },
+          performer: {
+            '@type': 'Person',
+            '@id': `${SITE_URL}/#person`,
+            name: 'Pastor Daniel Tiruwa',
+          },
+          offers: {
+            '@type': 'Offer',
+            price: '0',
+            priceCurrency: 'NPR',
+            availability: 'https://schema.org/InStock',
+            url: `${SITE_URL}/events/${id}`,
+          },
+          url: `${SITE_URL}/events/${id}`,
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+            { '@type': 'ListItem', position: 2, name: 'Events', item: `${SITE_URL}/events` },
+            { '@type': 'ListItem', position: 3, name: event.title, item: `${SITE_URL}/events/${id}` },
+          ],
+        },
+      ],
+    };
+
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <EventDetailClient event={event} />
+      </>
+    );
+  } catch (error) {
+    console.error('[EventDetailPage]', error);
+    return notFound();
+  }
+}

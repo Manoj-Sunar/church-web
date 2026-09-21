@@ -1,12 +1,12 @@
-"use client";
+// app/ClientWrapper.tsx
+'use client';
 
-import { useEffect, useState } from "react";
-
-import { Navbar } from "./Components/Layout/Navbar";
-import Loading from "./loading";
-import { Providers } from "./Provider";
-import Footer from "./Components/Layout/Footer";
-import { Toaster } from "react-hot-toast";
+import { useEffect, useState } from 'react';
+import { Navbar } from './Components/Layout/Navbar';
+import Loading from './loading';
+import { Providers } from './Provider';
+import Footer from './Components/Layout/Footer';
+import { Toaster } from 'react-hot-toast';
 
 export default function ClientWrapper({
   children,
@@ -19,20 +19,26 @@ export default function ClientWrapper({
   useEffect(() => {
     setMounted(true);
 
-    const visited = localStorage.getItem("visited");
+    const visited = localStorage.getItem('visited');
 
     if (!visited) {
       setTimeout(() => {
-        localStorage.setItem("visited", "true");
+        localStorage.setItem('visited', 'true');
         setLoading(false);
-      }, 4000);
+      }, 2500); // Reduced from 4000ms for better UX and SEO
     } else {
       setLoading(false);
     }
   }, []);
 
   // Prevent hydration mismatch
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
+  }
 
   if (loading) {
     return <Loading />;
@@ -41,12 +47,17 @@ export default function ClientWrapper({
   return (
     <>
       <Navbar />
-
       <Providers>
-        {children}
-        <Toaster position="top-right" />
+        <main id="main-content">
+          {children}
+        </main>
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+          }}
+        />
       </Providers>
-
       <Footer />
     </>
   );

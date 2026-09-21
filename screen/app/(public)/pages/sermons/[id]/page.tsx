@@ -1,13 +1,22 @@
-// app/sermons/[id]/page.tsx
-
+// app/(public)/sermons/[id]/page.tsx
 import { publicAPI } from '@/app/API/public.api';
 import SermonDetailClient from '@/app/Components/pages/Sermon/SermonDetailsClient';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { SITE_URL, ogImages } from '@/app/SEO/siteConfig';
 
-const siteUrl = 'https://pastordanieltiruwaministry.org';
+export const revalidate = 600;
 
-// ✅ Dynamic SEO Metadata
+// ✅ Pre-render top 100 sermons at build time
+export async function generateStaticParams() {
+  try {
+    const res = await publicAPI.getAllSermons(1, 100);
+    return (res?.data ?? []).map((s: any) => ({ id: String(s._id) }));
+  } catch {
+    return [];
+  }
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -20,63 +29,50 @@ export async function generateMetadata({
     const sermon = res?.data;
 
     if (!sermon) {
-      return {
-        title: 'Sermon Not Found | Pastor Daniel Tiruwa',
-      };
+      return { title: 'Sermon Not Found | Pastor Daniel Tiruwa Ministry' };
     }
 
     const title = `${sermon.title} | Pastor Daniel Tiruwa Sermon`;
     const description =
       sermon.description?.slice(0, 160) ||
-      'Watch powerful sermon from Pastor Daniel Tiruwa';
-
-
+      `Watch "${sermon.title}" - a powerful sermon by Pastor Daniel Tiruwa.`;
 
     return {
-      metadataBase: new URL(siteUrl),
-
+      metadataBase: new URL(SITE_URL),
       title,
       description,
-
       keywords: [
         sermon.title,
+        `${sermon.title} sermon`,
         'Pastor Daniel Tiruwa sermon',
         'Daniel Tiruwa preaching',
         'Christian sermon Nepal',
+        'Bible teaching Nepal',
+        sermon.speaker,
       ],
-
-      alternates: {
-        canonical: `/sermons/${id}`,
-      },
-
+      authors: [{ name: sermon.speaker || 'Pastor Daniel Tiruwa' }],
+      alternates: { canonical: `/sermons/${id}` },
       openGraph: {
         type: 'video.other',
-        url: `${siteUrl}/sermons/${id}`,
+        url: `${SITE_URL}/sermons/${id}`,
         title,
         description,
-
+        siteName: 'Pastor Daniel Tiruwa Ministry',
+        images: [{ url: ogImages.sermons, width: 1200, height: 630, alt: sermon.title }],
       },
-
       twitter: {
-        card: 'summary_large_image',
+        card: 'player',
         title,
         description,
-
+        images: [ogImages.sermons],
       },
-
-      robots: {
-        index: true,
-        follow: true,
-      },
+      robots: { index: true, follow: true },
     };
   } catch {
-    return {
-      title: 'Sermon | Pastor Daniel Tiruwa',
-    };
+    return { title: 'Sermon | Pastor Daniel Tiruwa' };
   }
 }
 
-// ✅ Page Component
 export default async function SermonDetailPage({
   params,
 }: {
@@ -84,43 +80,51 @@ export default async function SermonDetailPage({
 }) {
   const { id } = await params;
 
-  const res = await publicAPI.getSermonDetails(id,{ next: { revalidate: 600 },});
+  const res = await publicAPI.getSermonDetails(id, { next: { revalidate: 600 } });
   const sermon = res?.data;
 
   if (!sermon) return notFound();
 
-  // ✅ FULL Structured Data (IMPORTANT FIXED VERSION)
   const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "VideoObject",
-    name: sermon.title,
-    description: sermon.description,
-
-    uploadDate: sermon.date,
-    contentUrl: sermon.videoUrl || undefined,
-
-
-    author: {
-      "@type": "Person",
-      "@id": `${siteUrl}/#person`,
-      name: "Pastor Daniel Tiruwa",
-    },
-
-    publisher: {
-      "@type": "Organization",
-      name: "Pastor Daniel Tiruwa Ministry",
-      url: siteUrl,
-    },
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'VideoObject',
+        name: sermon.title,
+        description: sermon.description,
+        uploadDate: sermon.date,
+        contentUrl: sermon.videoUrl || undefined,
+        embedUrl: sermon.videoUrl || undefined,
+        thumbnailUrl: ogImages.sermons,
+        author: {
+          '@type': 'Person',
+          '@id': `${SITE_URL}/#person`,
+          name: sermon.speaker || 'Pastor Daniel Tiruwa',
+        },
+        publisher: {
+          '@type': 'Organization',
+          '@id': `${SITE_URL}/#organization`,
+          name: 'Pastor Daniel Tiruwa Ministry',
+        },
+        mainEntityOfPage: `${SITE_URL}/sermons/${id}`,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+          { '@type': 'ListItem', position: 2, name: 'Sermons', item: `${SITE_URL}/sermons` },
+          { '@type': 'ListItem', position: 3, name: sermon.title, item: `${SITE_URL}/sermons/${id}` },
+        ],
+      },
+    ],
   };
 
   return (
     <>
-      {/* Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-
       <SermonDetailClient sermon={sermon} />
     </>
   );
