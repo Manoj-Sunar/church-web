@@ -85,13 +85,15 @@ export default async function IndexPage() {
   };
 
   try {
-    const [res, ministries, publicAnalytics, mission] = await Promise.all([
+    const [res, ministries, publicAnalytics,sermons, mission] = await Promise.all([
       publicAPI.getPageContentByPageName("home"),
       publicAPI.getAllMinistry(1, 3),
       publicAPI.getPublicAnalytics(),
+      publicAPI.getAllSermons(1,3),
       publicAPI.getPageContentByPageName("about"),
     ]);
 
+       const sermonsData = sermons?.data ?? [];
     return (
       <>
         {/* Structured Data */}
@@ -114,6 +116,7 @@ export default async function IndexPage() {
           ministry={ministries?.data}
           analytics={publicAnalytics}
           mission={mission.data.about?.missionContent || []}
+          sermons={sermonsData}
         />
       </>
     );
