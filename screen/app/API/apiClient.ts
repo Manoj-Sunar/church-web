@@ -1,11 +1,18 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-export const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-    withCredentials: true,
-    timeout: 60000,
+const baseURL =
+  typeof window === "undefined"
+    ? process.env.API_URL || "http://localhost:5000"   // Server (SSR/build)
+    : process.env.NEXT_PUBLIC_API_URL || "/api";        // Browser
 
+console.log(`🔗 [apiClient] baseURL = ${baseURL}`);
+
+export const api = axios.create({
+  baseURL,
+  withCredentials: true,
+  timeout: 60000,
 });
+
 
 
 
