@@ -85,9 +85,8 @@ export const metadata: Metadata = {
     },
   },
 
-  verification: {
-    // google: 'YOUR_GOOGLE_SEARCH_CONSOLE_CODE',
-  },
+  // ✅ Google verification is handled via /public/google569467be9df5b0b2.html
+  // No `verification` block needed here.
 
   category: 'religion',
   classification: 'Church Ministry',

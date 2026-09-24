@@ -1,7 +1,7 @@
 // app/SEO/structuredData.ts
+import { SITE_URL, ogImages, socialLinks } from './siteConfig';
 
-import { siteUrl } from "./Metadata";
-
+export const siteUrl = SITE_URL;
 
 // Organization Schema
 export const organizationSchema = {
@@ -16,11 +16,12 @@ export const organizationSchema = {
   url: siteUrl,
   logo: {
     '@type': 'ImageObject',
-    url: `${siteUrl}/og/pastor-daniel-tiruwa.png`,
+    url: ogImages.home,
     width: 1200,
     height: 630,
   },
-  description: 'Official ministry of Pastor Daniel Tiruwa. Light to the Nations Emmanuel Church is dedicated to spreading the gospel, teaching God\'s Word, and serving communities through children ministry, village ministry, city ministry, and various outreach programs.',
+  description:
+    "Official ministry of Pastor Daniel Tiruwa. Light to the Nations Emmanuel Church is dedicated to spreading the gospel, teaching God's Word, and serving communities through children ministry, village ministry, city ministry, and various outreach programs.",
   founder: {
     '@type': 'Person',
     '@id': `${siteUrl}/#person`,
@@ -34,16 +35,12 @@ export const organizationSchema = {
   },
   contactPoint: {
     '@type': 'ContactPoint',
-    telephone: '+977-XXXXXXXXX',
+    telephone: '+977 9825612100',
     contactType: 'customer service',
-    email: 'info@pastordanieltiruwaministry.org.np',
+    email: 'trdaniel2022@gmail.com',
     availableLanguage: ['English', 'Nepali'],
   },
-  sameAs: [
-    'https://www.facebook.com/pastordanieltiruwa',
-    'https://www.youtube.com/@pastordanieltiruwa',
-    'https://www.instagram.com/pastordanieltiruwa',
-  ],
+  sameAs: socialLinks,
 };
 
 // Person Schema for Pastor Daniel Tiruwa
@@ -55,10 +52,11 @@ export const personSchema = {
   alternateName: ['Daniel Tiruwa', 'Pastor Tiruwa', 'Daniel'],
   url: siteUrl,
   jobTitle: 'Senior Pastor',
-  description: 'Pastor Daniel Tiruwa is a dedicated Christian leader, preacher, and founder of Light to the Nations Emmanuel Church. He is known for his powerful sermons, Bible teachings, and commitment to spreading the gospel in Nepal and beyond.',
+  description:
+    'Pastor Daniel Tiruwa is a dedicated Christian leader, preacher, and founder of Light to the Nations Emmanuel Church. He is known for his powerful sermons, Bible teachings, and commitment to spreading the gospel in Nepal and beyond.',
   image: {
     '@type': 'ImageObject',
-    url: `${siteUrl}/og/pastor-daniel-tiruwa.png`,
+    url: ogImages.home,
     width: 1200,
     height: 630,
   },
@@ -81,11 +79,7 @@ export const personSchema = {
     'Village Ministry',
     'City Ministry',
   ],
-  sameAs: [
-    'https://www.facebook.com/pastordanieltiruwa',
-    'https://www.youtube.com/@pastordanieltiruwa',
-    'https://www.instagram.com/pastordanieltiruwa',
-  ],
+  sameAs: socialLinks,
 };
 
 // Website Schema
@@ -119,8 +113,9 @@ export const churchSchema = {
   name: 'Light to the Nations Emmanuel Church',
   alternateName: 'Pastor Daniel Tiruwa Ministry',
   url: siteUrl,
-  logo: `${siteUrl}/og/pastor-daniel-tiruwa.png`,
-  description: 'Light to the Nations Emmanuel Church, led by Pastor Daniel Tiruwa, is a vibrant Christian community dedicated to worship, Bible teaching, and community outreach through children ministry, village ministry, and city ministry.',
+  logo: ogImages.home,
+  description:
+    'Light to the Nations Emmanuel Church, led by Pastor Daniel Tiruwa, is a vibrant Christian community dedicated to worship, Bible teaching, and community outreach through children ministry, village ministry, and city ministry.',
   address: {
     '@type': 'PostalAddress',
     addressCountry: 'NP',
@@ -131,15 +126,12 @@ export const churchSchema = {
     '@id': `${siteUrl}/#person`,
     name: 'Pastor Daniel Tiruwa',
   },
-  sameAs: [
-    'https://www.facebook.com/pastordanieltiruwa',
-    'https://www.youtube.com/@pastordanieltiruwa',
-  ],
+  sameAs: socialLinks,
 };
 
 // Breadcrumb Schema Generator
 export function generateBreadcrumbSchema(
-  items: { name: string; url: string }[]
+  items: { name: string; url: string }[],
 ) {
   return {
     '@context': 'https://schema.org',
@@ -170,7 +162,7 @@ export function generateSermonSchema(sermon: {
     uploadDate: sermon.date,
     contentUrl: sermon.videoUrl,
     embedUrl: sermon.videoUrl,
-    thumbnailUrl: `${siteUrl}/og/sermon-default.png`,
+    thumbnailUrl: ogImages.sermons,
     author: {
       '@type': 'Person',
       '@id': `${siteUrl}/#person`,

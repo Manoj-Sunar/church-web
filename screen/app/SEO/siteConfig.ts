@@ -1,16 +1,15 @@
 // app/SEO/siteConfig.ts
 
 /**
- * ⚠️ IMPORTANT — Change this ONE value after you attach your domain.
- * While on Vercel, keep this as the vercel.app URL.
- * After domain: set to 'https://pastordanieltiruwaministry.org.np'
+ * Single source of truth for the site URL.
+ * Change this ONE value and every metadata, sitemap, canonical,
+ * and JSON-LD reference updates automatically.
  */
-export const SITE_URL = 'https://pastordanieltiruwaministry.org.np';
+export const SITE_URL = 'https://church-web-ebon.vercel.app';
 
-// Where the sitemap, canonical, and OG will point
 export const siteUrl = SITE_URL;
 
-// Image paths (OG images must exist in /public/og/)
+// OG image paths (files must exist in /public/og/)
 export const ogImages = {
   home: `${siteUrl}/og/pastor-daniel-tiruwa.png`,
   about: `${siteUrl}/og/pastor-daniel-tiruwa-about.png`,
@@ -22,14 +21,14 @@ export const ogImages = {
   fallback: `${siteUrl}/og/pastor-daniel-tiruwa.png`,
 };
 
-// Social handles used across schemas
+// Social handles used across all schemas
 export const socialLinks = [
-  'https://www.facebook.com/pastordanieltiruwa',
-  'https://www.youtube.com/@pastordanieltiruwa',
-  'https://www.instagram.com/pastordanieltiruwa',
+  'https://www.facebook.com/daniel.tiruwa.5',
+  'https://www.youtube.com/@daniel_tiruwa',
+  'https://www.tiktok.com/@danieltr104',
 ];
 
-// Primary keywords (used on every page for consistency)
+// Primary keywords used site-wide
 export const primaryKeywords = [
   'Pastor Daniel Tiruwa',
   'Daniel Tiruwa',
@@ -65,7 +64,7 @@ export const orgInfo = {
     'Daniel Tiruwa Ministry',
     'Emmanuel Church Nepal',
   ],
-  email: 'info@pastordanieltiruwaministry.org.np',
-  phone: '+977-9800000000', // ⚠️ replace with real
+  email: 'trdaniel2022@gmail.com',
+  phone: '+977 9825612100',
   country: 'NP',
 };
