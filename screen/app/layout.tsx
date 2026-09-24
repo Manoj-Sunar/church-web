@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { Fredoka, Quicksand } from 'next/font/google';
 import './globals.css';
 import { SITE_URL, ogImages, primaryKeywords, socialLinks } from './SEO/siteConfig';
+import { Providers } from './Provider';
 
 const quicksand = Quicksand({
   subsets: ['latin'],
@@ -175,7 +176,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body suppressHydrationWarning className="font-sans antialiased">
+        
+
         {children}
+       
       </body>
     </html>
   );

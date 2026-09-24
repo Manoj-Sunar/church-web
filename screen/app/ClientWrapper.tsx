@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Navbar } from './Components/Layout/Navbar';
 import Loading from './loading';
 import Footer from './Components/Layout/Footer';
 import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './lib/context/authContext';
 
 export default function ClientWrapper({
   children,
@@ -13,6 +15,20 @@ export default function ClientWrapper({
 }) {
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+
+  // ✅ Create QueryClient once per browser session
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60_000,
+            refetchOnWindowFocus: false,
+            retry: 1,
+          },
+        },
+      })
+  );
 
   useEffect(() => {
     setMounted(true);
@@ -38,11 +54,13 @@ export default function ClientWrapper({
   if (loading) return <Loading />;
 
   return (
-    <>
-      <Navbar />
-      <main id="main-content">{children}</main>
-      <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
-      <Footer />
-    </>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider initialUser={null}>
+        <Navbar />
+        <main id="main-content">{children}</main>
+        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+        <Footer />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
