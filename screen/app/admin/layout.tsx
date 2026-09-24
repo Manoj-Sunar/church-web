@@ -6,7 +6,8 @@ import type { User } from '@/app/Types/APIResponse';
 const API_BASE = process.env.API_URL ?? 'http://localhost:5000';
 
 async function getServerUser(): Promise<User | null> {
-  const cookieStore = cookies();
+  // ✅ await the promise
+  const cookieStore = await cookies();
   const cookieHeader = cookieStore
     .getAll()
     .map((c) => `${c.name}=${c.value}`)
