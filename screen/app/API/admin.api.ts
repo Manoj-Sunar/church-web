@@ -1,5 +1,5 @@
 
-import { IAnalytics, IMembers, IMessages, UploadResponse } from "../Types/APIResponse";
+import { IAnalytics, IMembers, IMessages, UploadResponse,User } from "../Types/APIResponse";
 import { Event, Leader, Member, Ministry, Sermon } from "../Types/DataTypes";
 import { apiClient } from "./apiClient";
 import { PageKey, UpdatePageContentPayload } from "@/app/Types/PageContent.types";
@@ -157,6 +157,12 @@ export const adminAPI = {
     // ===================== analytics api ===============================
     Analytics: async () => {
         return apiClient.get<IAnalytics>("/admin/analytics");
+    },
+
+
+    // inside adminAPI object
+    getMe: async () => {
+        return apiClient.get<{ success: boolean; user: User }>("/auth/me");
     },
 
 

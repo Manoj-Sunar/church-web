@@ -1,18 +1,24 @@
 'use client';
 
 import * as React from 'react';
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-export function Providers({ children }: { children: React.ReactNode }) {
+import type { User } from '@/app/Types/APIResponse';
+import { AuthProvider } from './lib/context/authContext';
+
+export function Providers({
+  children,
+  initialUser,
+}: {
+  children: React.ReactNode;
+  initialUser?: User | null;
+}) {
   const [queryClient] = React.useState(
     () =>
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60_000, // 1 min cache
+            staleTime: 60_000,
             refetchOnWindowFocus: false,
             retry: 1,
           },
@@ -22,7 +28,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <AuthProvider initialUser={initialUser ?? null}>
+        {children}
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

@@ -6,6 +6,8 @@ import {
   Res,
   UnauthorizedException,
   HttpCode,
+  Get,
+  NotFoundException,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { UserService } from './user.service';
@@ -13,7 +15,7 @@ import { Public } from '@/src/decorator/public.decorator';
 
 @Controller('auth')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   private cookieOptions(isRefresh = false) {
     const isProd = process.env.NODE_ENV === 'production';
@@ -57,7 +59,7 @@ export class UserController {
     res.cookie('refreshToken', result.refreshToken, this.cookieOptions(true));
 
     return {
-      success:true,
+      success: true,
       message: 'Login successful',
       user: result.user,
     };
@@ -84,6 +86,34 @@ export class UserController {
       user: result.user,
     };
   }
+
+
+
+  // =========================
+  // GET CURRENT USER (ME)
+  // =========================
+  @Get('me')
+  @HttpCode(200)
+  async getMe(@Req() req: Request) {
+    const payload = (req as any).user;
+
+    if (!payload?.sub) {
+      throw new UnauthorizedException('Not authenticated');
+    }
+
+    const user = await this.userService.getCurrentUser(payload.sub);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      success: true,
+      user,
+    };
+  }
+
+
 
   // =========================
   // LOGOUT

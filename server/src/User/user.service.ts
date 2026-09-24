@@ -134,7 +134,7 @@ export class UserService {
 
 
 
-    
+
     // =========================
     // ISSUE TOKENS (CORE LOGIC)
     // =========================
@@ -192,4 +192,29 @@ export class UserService {
             updatedAt: user.updatedAt,
         };
     }
+
+
+
+    // ===========================
+    // Login user data
+    // ============================
+
+    // =========================
+    // GET CURRENT USER
+    // =========================
+    async getCurrentUser(userId: string): Promise<SafeUser | null> {
+        if (!userId) {
+            throw new UnauthorizedException('Invalid user id');
+        }
+
+        const user = await this.userModel.findById(userId).lean();
+
+        if (!user) {
+            return null;
+        }
+
+        return this.toSafe(user);
+    }
+
+
 }
