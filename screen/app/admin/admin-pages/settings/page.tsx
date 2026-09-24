@@ -12,6 +12,7 @@ import {
 import { Button } from "@/app/Components/UI/Button/Button";
 import { InputField } from "@/app/Components/TextField/InputField";
 import { Heading } from "@/app/Components/Typography/TypoGraphy";
+import { useAuth } from "@/app/lib/context/authContext";
 
 
 
@@ -30,7 +31,7 @@ export default function AccountSettingsPage() {
 
   const [toast, setToast] = useState<string | null>(null);
 
-  
+  const {user}=useAuth()
 
   // ✅ Profile Form
   const {
@@ -39,8 +40,8 @@ export default function AccountSettingsPage() {
     formState: { errors },
   } = useForm<ProfileForm>({
     defaultValues: {
-      name: "Alexander Pierce",
-      email: "alex.pierce@nexus-admin.io",
+      name: user?.name,
+      email: user?.email,
     },
   });
 
