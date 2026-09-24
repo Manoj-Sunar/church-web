@@ -4,18 +4,26 @@ import { SITE_URL } from './SEO/siteConfig';
 
 export const revalidate = 3600; // regenerate hourly
 
+/**
+ * ✅ Stable build date for static pages.
+ * Using `new Date()` on every regeneration makes Google think
+ * static pages change every hour — which dilutes the `lastmod` signal.
+ * Update this date manually only when you actually change static page content.
+ */
+const BUILD_DATE = new Date('2026-09-24T00:00:00.000Z');
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
-    { url: `${SITE_URL}/`, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-    { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
-    { url: `${SITE_URL}/sermons`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
-    { url: `${SITE_URL}/ministries`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${SITE_URL}/events`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
-    { url: `${SITE_URL}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${SITE_URL}/donate`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/`, lastModified: BUILD_DATE, changeFrequency: 'daily', priority: 1.0 },
+    { url: `${SITE_URL}/about`, lastModified: BUILD_DATE, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${SITE_URL}/sermons`, lastModified: BUILD_DATE, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${SITE_URL}/ministries`, lastModified: BUILD_DATE, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${SITE_URL}/events`, lastModified: BUILD_DATE, changeFrequency: 'daily', priority: 0.8 },
+    { url: `${SITE_URL}/contact`, lastModified: BUILD_DATE, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${SITE_URL}/donate`, lastModified: BUILD_DATE, changeFrequency: 'monthly', priority: 0.8 },
   ];
 
-  let dynamic: MetadataRoute.Sitemap = [];
+  const dynamic: MetadataRoute.Sitemap = [];
 
   try {
     // Lazy import inside try so if env is missing we don't crash the build
