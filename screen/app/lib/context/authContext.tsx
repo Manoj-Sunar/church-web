@@ -1,3 +1,4 @@
+// app/lib/context/authContext.tsx
 "use client";
 
 import { adminAPI } from "@/app/API/admin.api";
@@ -13,10 +14,6 @@ import {
   type ReactNode,
 } from "react";
 
-
-/* ─────────────────────────────────────────────
-   Context value
-   ───────────────────────────────────────────── */
 interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
@@ -30,14 +27,18 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-/* ─────────────────────────────────────────────
-   Provider
-   ───────────────────────────────────────────── */
 interface AuthProviderProps {
   children: ReactNode;
-  /** Passed from server layout to avoid auth flash */
   initialUser?: User | null;
 }
+
+// ✅ Only attempt /auth/me if a refresh cookie exists
+const hasRefreshCookie = () => {
+  if (typeof document === "undefined") return false;
+  return document.cookie
+    .split(";")
+    .some((c) => c.trim().startsWith("refreshToken="));
+};
 
 export function AuthProvider({
   children,
@@ -55,8 +56,16 @@ export function AuthProvider({
     };
   }, []);
 
-  /* ───────── fetch /auth/me ───────── */
   const fetchMe = useCallback(async (): Promise<User | null> => {
+    // ✅ Guest guard — do NOT hit the API without a refresh cookie
+    if (!hasRefreshCookie()) {
+      if (mountedRef.current) {
+        setUser(null);
+        setError(null);
+      }
+      return null;
+    }
+
     try {
       const data = await adminAPI.getMe();
       if (mountedRef.current) {
@@ -65,7 +74,6 @@ export function AuthProvider({
       }
       return data.user;
     } catch (err: any) {
-      // 401 → not logged in, not an error
       if (err?.response?.status === 401) {
         if (mountedRef.current) {
           setUser(null);
@@ -81,7 +89,6 @@ export function AuthProvider({
     }
   }, []);
 
-  /* ───────── bootstrap on mount ───────── */
   useEffect(() => {
     if (initialUser) {
       setIsLoading(false);
@@ -98,7 +105,6 @@ export function AuthProvider({
     };
   }, [initialUser, fetchMe]);
 
-  /* ───────── login ───────── */
   const login = useCallback(async (email: string, password: string) => {
     const data: any = await adminAPI.login({ email, password });
     const loggedInUser: User = data.user;
@@ -107,12 +113,8 @@ export function AuthProvider({
     return loggedInUser;
   }, []);
 
-
-
-  /* ───────── refresh ───────── */
   const refresh = useCallback(async () => fetchMe(), [fetchMe]);
 
-  /* ───────── memoized value ───────── */
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
@@ -122,7 +124,6 @@ export function AuthProvider({
       isTreasurer: user?.role === "treasurer",
       error,
       login,
-     
       refresh,
     }),
     [user, isLoading, error, login, refresh]
@@ -131,9 +132,6 @@ export function AuthProvider({
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-/* ─────────────────────────────────────────────
-   Hook
-   ───────────────────────────────────────────── */
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used within an <AuthProvider>");
