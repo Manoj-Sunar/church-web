@@ -15,8 +15,6 @@ import {
   ChevronRight,
   Facebook,
   Youtube,
-  Instagram,
-  Twitter,
   CheckCircle2,
   HelpCircle,
   HandHeart,
@@ -38,6 +36,28 @@ import { Paragraph } from "../../Typography/TypoGraphy";
 import { PageContentResponse } from "@/app/Types/PageContent.types";
 import { publicAPI } from "@/app/API/public.api";
 import toast from "react-hot-toast";
+
+/* ---------- TikTok Icon (inline SVG — no external dependency) ---------- */
+const TikTokIcon = memo(function TikTokIcon({
+  className = "w-5 h-5",
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      className={className}
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+    </svg>
+  );
+});
+
+/* ---------------------------------- TYPES ---------------------------------- */
 
 type Subject =
   | "General Inquiry"
@@ -67,7 +87,8 @@ const SUBJECTS: readonly Subject[] = [
 ] as const;
 
 interface IContactProps {
-  content: PageContentResponse;
+  // ✅ Allow null — page passes null if API fails
+  content: PageContentResponse | null;
 }
 
 /* ---------------------------------- STATIC CONTENT ---------------------------------- */
@@ -117,12 +138,30 @@ const officeHours = [
   { day: "Public Holidays", hours: "Closed" },
 ];
 
+// ✅ Typed social links with `key` field
 const socialLinks = [
-  { icon: Facebook, label: "Facebook", color: "hover:bg-blue-600" },
-  { icon: Youtube, label: "YouTube", color: "hover:bg-red-600" },
-  { icon: Instagram, label: "Instagram", color: "hover:bg-pink-600" },
-  { icon: Twitter, label: "Twitter", color: "hover:bg-sky-500" },
-];
+  {
+    key: "facebook",
+    label: "Facebook",
+    href: "https://www.facebook.com/daniel.tiruwa.5",
+    color: "hover:bg-blue-600",
+    Icon: Facebook,
+  },
+  {
+    key: "youtube",
+    label: "YouTube",
+    href: "https://www.youtube.com/@daniel_tiruwa",
+    color: "hover:bg-red-600",
+    Icon: Youtube,
+  },
+  {
+    key: "tiktok",
+    label: "TikTok",
+    href: "https://www.tiktok.com/@danieltr104",
+    color: "hover:bg-pink-600",
+    Icon: TikTokIcon,
+  },
+] as const;
 
 const faqs = [
   {
@@ -161,11 +200,12 @@ const whatToExpect = [
   {
     icon: Heart,
     title: "We Pray & Respond",
-    description: "Your request is prayed over, and we respond within 24 hours.",
+    description:
+      "Your request is prayed over, and we respond within 24 hours.",
   },
 ];
 
-/* ---------------------------------- COMPONENTS ---------------------------------- */
+/* ---------------------------------- SUB-COMPONENTS ---------------------------------- */
 
 const ContactInfoItem = memo(function ContactInfoItem({
   icon,
@@ -290,7 +330,6 @@ const ContactForm = memo(function ContactForm({
 /* ---------------------------------- MAIN ---------------------------------- */
 
 export default function ContactClient({ content }: IContactProps) {
-  const [resetFormRef, setResetFormRef] = useState<null | (() => void)>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const { mutate, isPending } = useMutation({
@@ -300,8 +339,6 @@ export default function ContactClient({ content }: IContactProps) {
   const handleSubmit = useCallback(
     (values: FormValues, resetForm: () => void) => {
       if (isPending) return;
-
-      setResetFormRef(() => resetForm);
 
       const payload = {
         ...values,
@@ -315,8 +352,7 @@ export default function ContactClient({ content }: IContactProps) {
           resetForm();
         },
         onError: (err: any) => {
-          const msg =
-            err?.response?.data?.message || "Failed to send message";
+          const msg = err?.response?.data?.message || "Failed to send message";
           toast.error(msg);
         },
       });
@@ -324,23 +360,28 @@ export default function ContactClient({ content }: IContactProps) {
     [mutate, isPending]
   );
 
+  // ✅ Safe content access — never crash on null
+  const safeContent = content?.data ?? null;
+  const hero = safeContent?.hero ?? null;
+  const contact = safeContent?.contact ?? null;
+
   return (
     <div className="overflow-hidden bg-white">
       {/* HERO */}
       <CommonHeroSection
-        heading={content.data.hero?.title || "Get in Touch"}
+        heading={hero?.title || "Get in Touch"}
         paragraph={
-          content.data.hero?.subtitle ||
+          hero?.subtitle ||
           "We would love to hear from you. Reach out for prayer, questions, or to connect with our ministry."
         }
-        backgroundImage={content.data.hero?.image?.url}
+        backgroundImage={hero?.image?.url}
       />
 
       {/* STATS BAR */}
       <section className="relative -mt-10 z-10">
         <Container>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {contactStats.map((stat, index) => (
+            {contactStats.map((stat) => (
               <div
                 key={stat.label}
                 className="bg-white rounded-2xl p-5 shadow-xl border border-slate-100 text-center hover:shadow-2xl transition-shadow"
@@ -391,7 +432,7 @@ export default function ContactClient({ content }: IContactProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {contactReasons.map((reason, index) => (
+            {contactReasons.map((reason) => (
               <Card
                 key={reason.title}
                 className="p-7 h-full border-0 shadow-lg hover:shadow-2xl transition-all duration-300 rounded-3xl bg-white group"
@@ -401,7 +442,10 @@ export default function ContactClient({ content }: IContactProps) {
                 >
                   <reason.icon className="w-7 h-7 text-white" />
                 </div>
-                <Heading level={4} className="mb-3 group-hover:text-primary transition-colors">
+                <Heading
+                  level={4}
+                  className="mb-3 group-hover:text-primary transition-colors"
+                >
                   {reason.title}
                 </Heading>
                 <Paragraph className="text-slate-500 text-sm leading-relaxed">
@@ -437,19 +481,19 @@ export default function ContactClient({ content }: IContactProps) {
                 <ContactInfoItem
                   icon={<MapPin size={22} />}
                   title="Visit Us"
-                  value={content.data.contact?.address || "Kathmandu, Nepal"}
+                  value={contact?.address || "Kathmandu, Nepal"}
                   description="Come worship with us in person"
                 />
                 <ContactInfoItem
                   icon={<Phone size={22} />}
                   title="Call Us"
-                  value={content.data.contact?.phone || "+977-XXXXXXXXX"}
+                  value={contact?.phone || "+977 9825612100"}
                   description="Mon-Fri, 9 AM - 6 PM"
                 />
                 <ContactInfoItem
                   icon={<Mail size={22} />}
                   title="Email Us"
-                  value={content.data.contact?.email || "info@danieltiruwa.com"}
+                  value={contact?.email || "trdaniel2022@gmail.com"}
                   description="We respond within 24 hours"
                 />
               </div>
@@ -494,20 +538,23 @@ export default function ContactClient({ content }: IContactProps) {
                 </div>
 
                 <Paragraph className="text-sm text-slate-500 mb-5">
-                  Stay connected and be the first to know about our events
-                  and updates.
+                  Stay connected and be the first to know about our events and
+                  updates.
                 </Paragraph>
 
+                {/* ✅ Fixed social icons — all use <a href> */}
                 <div className="flex flex-wrap gap-3">
-                  {socialLinks.map((link) => (
-                    <button
-                      key={link.label}
-                      type="button"
-                      className={`w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 transition-all duration-300 ${link.color} hover:text-white hover:scale-110`}
-                      aria-label={`Follow us on ${link.label}`}
+                  {socialLinks.map(({ key, label, href, color, Icon }) => (
+                    <a
+                      key={key}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 transition-all duration-300 ${color} hover:text-white hover:scale-110`}
+                      aria-label={`Follow us on ${label}`}
                     >
-                      <link.icon className="w-5 h-5" />
-                    </button>
+                      <Icon className="w-5 h-5" />
+                    </a>
                   ))}
                 </div>
               </Card>
