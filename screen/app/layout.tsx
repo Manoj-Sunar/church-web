@@ -88,6 +88,9 @@ export const metadata: Metadata = {
 
   // ✅ Google verification is handled via /public/google569467be9df5b0b2.html
   // No `verification` block needed here.
+  verification: {
+    google: 'google8fe60e6f66f7b2f0',
+  },
 
   category: 'religion',
   classification: 'Church Ministry',

@@ -1,13 +1,13 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, memo } from "react";
 
 interface TextAreaFieldProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
 }
 
-export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>(
+export const TextAreaField =memo( forwardRef<HTMLTextAreaElement, TextAreaFieldProps>(
   ({ label, error, required, className = "", ...props }, ref) => {
     return (
       <div className="space-y-2">
@@ -31,6 +31,6 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
       </div>
     );
   }
-);
+));
 
 TextAreaField.displayName = "TextAreaField";

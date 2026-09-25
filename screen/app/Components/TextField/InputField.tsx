@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef } from "react";
+import React, { forwardRef, memo, useId } from "react";
 
 export interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -11,7 +11,7 @@ export interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElem
   containerClassName?: string;
 }
 
-export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
+export const InputField =memo( forwardRef<HTMLInputElement, InputFieldProps>(
   (
     {
       label,
@@ -27,7 +27,9 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     },
     ref
   ) => {
-    const inputId = id || `field-${Math.random().toString(36).substr(2, 9)}`;
+    // ✅ useId() is stable across SSR and client — no hydration mismatch
+    const reactId = useId();
+    const inputId = id || `field-${reactId.replace(/[:]/g, "")}`;
 
     const ringClass = error
       ? "border-red-200 focus:border-red-300 focus:ring-4 focus:ring-red-500/10"
@@ -91,6 +93,6 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       </div>
     );
   }
-);
+));
 
 InputField.displayName = "InputField";
